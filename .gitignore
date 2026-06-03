@@ -1,0 +1,23 @@
+# Windows built-in files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Go binary and files
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+qsys-mcp
+qsys-mcp-mac-*
+
+# Config & local credentials
+.env
+config.json
+
+# Log files
+*.log
+
+# Archives
+*.zip
