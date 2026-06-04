@@ -117,6 +117,24 @@ On Windows, using `cmd.exe /c` wraps the execution safely:
 *   **Note**: Make sure to replace `<absolute_path_to_qsys-mcp.exe_directory>` and `<absolute_path_to_config.json_directory>` with the actual folder paths on your machine. The `cwd` must be the directory containing `config.json`.
 *   **Note**: In Windows JSON configurations, all backslashes (`\`) in paths must be doubled (i.e. `\\`).
 
+#### Configuration Example (Running from Source via Go - Recommended for Development)
+If you have the Go SDK installed and want to run the server directly from the source code during development (allowing code changes to take effect immediately upon server restart):
+```json
+{
+  "mcpServers": {
+    "qsys-mcp-dev": {
+      "command": "go",
+      "args": [
+        "run",
+        "."
+      ],
+      "cwd": "<absolute_path_to_project_root_directory>"
+    }
+  }
+}
+```
+*   **Note**: Make sure to replace `<absolute_path_to_project_root_directory>` with the actual path to the project root directory (where `main.go` and `go.mod` are located).
+
 ---
 
 ## 1. Connection Management (Connection)

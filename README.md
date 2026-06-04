@@ -59,6 +59,12 @@ chmod +x ./qsys-mcp
 ./qsys-mcp
 ```
 
+#### Running from Source (For Developers)
+If you have the Go SDK installed and want to run the server directly from source code without compiling:
+```powershell
+go run .
+```
+
 ---
 
 ## Integration with AI Clients
@@ -66,6 +72,8 @@ chmod +x ./qsys-mcp
 This server runs via standard I/O (`stdio`). You can register it in your client configuration.
 
 ### Claude Desktop Configuration
+
+#### Option A: Using Pre-compiled Binary
 Add the server configuration to your `%APPDATA%\Claude\claude_desktop_config.json` (Windows) or `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
 
 ```json
@@ -74,6 +82,21 @@ Add the server configuration to your `%APPDATA%\Claude\claude_desktop_config.jso
     "qsys-mcp": {
       "command": "cmd.exe",
       "args": ["/c", "C:\\path\\to\\qsys-mcp.exe"],
+      "cwd": "C:\\path\\to\\project_directory"
+    }
+  }
+}
+```
+
+#### Option B: Running from Source (Recommended for Development)
+If you want to run the server directly from the source code during development (allowing code changes to take effect immediately upon server restart):
+
+```json
+{
+  "mcpServers": {
+    "qsys-mcp-dev": {
+      "command": "go",
+      "args": ["run", "."],
       "cwd": "C:\\path\\to\\project_directory"
     }
   }
