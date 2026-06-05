@@ -69,7 +69,7 @@ func RegisterChangeGroupTools(s *mcp.Server) {
 
 		var bulletPoints []string
 		for _, name := range names {
-			bulletPoints = append(bulletPoints, fmt.Sprintf("  • %s", name))
+			bulletPoints = append(bulletPoints, fmt.Sprintf("  - %s", name))
 		}
 
 		return fmt.Sprintf("Created change group '%s' with %d control(s):\n%s", id, len(controls), strings.Join(bulletPoints, "\n")), nil

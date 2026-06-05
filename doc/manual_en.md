@@ -62,7 +62,7 @@ The meaning and usage of each configuration option in `config.json` is as follow
     *   **Details**: If `true`, all incoming and outgoing JSON-RPC communications are printed to the standard error console, helping with troubleshooting.
 *   **`protected_controls`** (string, optional)
     *   **Description**: Regular expression pattern to protect specific controls from unauthorized modification.
-    *   **Details**: For example, `"system\\..*,.*\\.password"` blocks any external write attempt to controls matching these naming patterns.
+    *   **Details**: For example, `"system\\..*,.*\\.password"` blocks any external write attempt to controls matching these naming patterns. Note that component-level controls are checked using the format `ComponentName.ControlName` (e.g., `ImportantMic.mute`).
 
 ### 3. Running on Different OS
 
@@ -98,7 +98,7 @@ Edit the configuration file corresponding to your tool and OS:
 *   **Antigravity 2.0 / MCP Agents**:
     *   **Common**: `~/.gemini/antigravity/mcp_settings.json` (or settings panel)
 
-#### Configuration Examples (Windows via cmd.exe)
+#### Configuration Example (Windows)
 On Windows, using `cmd.exe /c` wraps the execution safely:
 ```json
 {
@@ -114,8 +114,23 @@ On Windows, using `cmd.exe /c` wraps the execution safely:
   }
 }
 ```
-*   **Note**: Make sure to replace `<absolute_path_to_qsys-mcp.exe_directory>` and `<absolute_path_to_config.json_directory>` with the actual folder paths on your machine. The `cwd` must be the directory containing `config.json`.
+*   **Note**: Replace `<absolute_path_to_qsys-mcp.exe_directory>` and `<absolute_path_to_config.json_directory>` with actual paths. The `cwd` must point to the directory containing `config.json`.
 *   **Note**: In Windows JSON configurations, all backslashes (`\`) in paths must be doubled (i.e. `\\`).
+
+#### Configuration Example (macOS)
+On macOS, specify the binary path directly:
+```json
+{
+  "mcpServers": {
+    "qsys-mcp": {
+      "command": "/absolute/path/to/qsys-mcp",
+      "args": [],
+      "cwd": "/absolute/path/to/config_directory"
+    }
+  }
+}
+```
+*   **Note**: Before first run, grant execution rights with `chmod +x ./qsys-mcp` in the terminal.
 
 #### Configuration Example (Running from Source via Go - Recommended for Development)
 If you have the Go SDK installed and want to run the server directly from the source code during development (allowing code changes to take effect immediately upon server restart):

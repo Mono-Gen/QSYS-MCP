@@ -183,6 +183,14 @@ func (c *EcpClient) sendCommand(command string) (string, error) {
 	case line := <-c.lineResolve:
 		return line, nil
 	case <-time.After(5 * time.Second):
+		// Close socket to prevent synchronization issues
+		c.connMutex.Lock()
+		c.connected = false
+		if c.socket != nil {
+			c.socket.Close()
+			c.socket = nil
+		}
+		c.connMutex.Unlock()
 		return "", errors.New("ecp command timeout")
 	}
 }

@@ -1,23 +1,43 @@
-# Windows built-in files
+# OS files
 Thumbs.db
-ehthumbs.db
+db.
 Desktop.ini
+.DS_Store
+.AppleDouble
+.LSOverride
 
-# Go binary and files
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-qsys-mcp
-qsys-mcp-mac-*
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-# Config & local credentials
-.env
-config.json
-
-# Log files
+# Temporary files
+*.tmp
 *.log
 
-# Archives
-*.zip
+# Documentation & Internal Tasks (Local only)
+.docs/
+tasks/
+.tasks/
+archives/
+venv/
+.agents/
+
+# Security
+.env
+.env.*
+
+# Build Artifacts
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+qsys-mcp-mac-amd64
+qsys-mcp-mac-arm64
+qsys-mcp-v*.zip
+
+# Config (contains secrets)
+config.json

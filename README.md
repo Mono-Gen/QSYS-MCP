@@ -1,126 +1,106 @@
-# Q-SYS MCP Server (v0.9.0)
+# Q-SYS Model Context Protocol (MCP) Server
 
-A Model Context Protocol (MCP) server that enables AI coding assistants (such as Cursor, Cline, Claude Desktop, Antigravity, etc.) to control Q-SYS Core systems and **highly assists in writing Q-SYS Lua scripts and CSS styling** by referencing official guidelines dynamically.
+`qsys-mcp` is an MCP server that allows AI agents (such as Claude Desktop or Gemini Antigravity) to monitor and control a Q-SYS Core processor over the network. It bridges Q-SYS Remote Control (QRC) and External Control Protocol (ECP) to Model Context Protocol, enabling intelligent AV automation, configuration, debugging, and UI styling.
 
----
+## Features
 
-## Key Features
+- **Named Control Access**: Get and set value, position, or string representation of named controls.
+- **Component Control**: Query and batch-set controls within named schematic components (mixers, EQs, etc.).
+- **Snapshot Management**: Load and save snapshots by name or bank/number.
+- **UCI Routing**: Switch active pages and query UCI status on touchscreen controllers.
+- **Change Group Monitoring**: Efficiently poll controls for state changes.
+- **Lua Script Execution**: Run Lua commands directly on the Core for debugging.
+- **Local CSS Integration**: Edit and apply UCI CSS stylesheets locally and sync to Q-SYS Designer.
 
-1.  **AI Scripting & Styling Assistance (New in v0.9.0)**:
-    *   Exposes dynamic Q-SYS CSS and Lua reference sheets directly to AI models.
-    *   AIs can inspect API specifications (`TcpSocket`, `HttpClient`, `Timer`, `NamedControl`, `Component`) and UCI CSS class definitions on-the-fly to write bug-free code.
-2.  **Core Connectivity & Status**: Check core states and design versions.
-3.  **Control Management**: Get and set Named Controls with values, strings, and positions.
-4.  **Component Control**: Retrieve and modify properties inside Named Components (including decimal-escaped frequencies).
-5.  **Change Groups & Snapshots**: Efficiently poll values via change groups and trigger snapshot bank saves/loads.
-6.  **UCI Manipulation**: Remotely switch user control interface pages.
+## Requirements
 
----
+- Go 1.21+ (if compiling from source)
+- A network-reachable Q-SYS Core processor (or Q-SYS Designer running in Emulation mode)
 
-## Installation & Running
+## Configuration (`config.json`)
 
-### Download Releases
-Pre-compiled binaries and setup packages are available on the [GitHub Releases](https://github.com/Mono-Gen/QSYS-MCP/releases) page. Download the ZIP archive for the corresponding release version.
-
-### 1. Prerequisites
-Ensure you have the following files in the same folder:
-*   `qsys-mcp` (or `qsys-mcp.exe` on Windows)
-*   `config.json` (Configuration file)
-
-### 2. Configure `config.json`
-Edit your `config.json` file to define connected cores and reference file paths:
+Configure the server by editing `config.json` in the same directory as the executable:
 
 ```json
 {
-  "cores": "default=127.0.0.1:1710:1702:admin:password",
-  "styles_dir": "C:\\Users\\YOUR_USERNAME\\Documents\\QSC\\Q-SYS Designer\\Styles",
+  "cores": "default=127.0.0.1:1710:1702:admin:1234",
+  "styles_dir": "C:\\Users\\Username\\Documents\\QSC\\Q-SYS Designer\\Styles",
   "lua_reference_path": "reference/reference_lua.md",
   "css_reference_path": "reference/reference_css.md",
   "polling_interval": 350,
-  "debug": true
+  "protected_controls": "system\\..*,.*\\.password",
+  "debug": false
 }
 ```
 
-*   **cores**: Connection string formatted as `alias=IP:QRC_Port:ECP_Port:username:pin`. Credentials and ports can be omitted if Access Control is disabled (e.g., `"cores": "default=192.168.1.100"`).
-*   **lua_reference_path** / **css_reference_path**: Paths to the Markdown reference sheets generated from Q-SYS Help.
+### Config Parameters
 
-### 3. Execution
+- `cores`: Target Q-SYS Cores. Format: `alias=IP:qrcPort:ecpPort:username:password`. Ports and auth are optional. Multiple cores can be comma-separated.
+- `styles_dir`: Absolute path to Q-SYS Designer Styles directory for local CSS syncing.
+- `lua_reference_path` / `css_reference_path`: Paths to markdown references for Lua API and CSS rules.
+- `polling_interval`: Recommended change group polling interval in milliseconds.
+- `protected_controls`: Comma-separated regex list of controls that should block write attempts.
 
-#### Windows
-Run via Command Prompt or PowerShell:
-```powershell
-.\qsys-mcp.exe
-```
+## Installation & Setup
 
-#### macOS (Apple Silicon/Intel)
-Rename the corresponding binary to `qsys-mcp`, grant execution rights, and run:
+### 1. Run/Compile the Server
+To run from source:
 ```bash
-chmod +x ./qsys-mcp
-./qsys-mcp
-```
-
-#### Running from Source (For Developers)
-If you have the Go SDK installed and want to run the server directly from source code without compiling:
-```powershell
 go run .
 ```
+To compile a binary:
+```bash
+go build -ldflags="-s -w -extldflags '-static'" -o qsys-mcp
+```
 
----
+### 2. Claude Desktop Integration
 
-## Integration with AI Clients
+Edit the Claude configuration file for your OS:
 
-This server runs via standard I/O (`stdio`). You can register it in your client configuration.
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 
-### Claude Desktop Configuration
-
-#### Option A: Using Pre-compiled Binary
-Add the server configuration to your `%APPDATA%\Claude\claude_desktop_config.json` (Windows) or `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
+#### Windows
 
 ```json
 {
   "mcpServers": {
     "qsys-mcp": {
       "command": "cmd.exe",
-      "args": ["/c", "C:\\path\\to\\qsys-mcp.exe"],
-      "cwd": "C:\\path\\to\\project_directory"
+      "args": [
+        "/c",
+        "C:\\path\\to\\qsys-mcp.exe"
+      ],
+      "cwd": "C:\\path\\to\\config_directory"
     }
   }
 }
 ```
 
-#### Option B: Running from Source (Recommended for Development)
-If you want to run the server directly from the source code during development (allowing code changes to take effect immediately upon server restart):
+#### macOS
 
 ```json
 {
   "mcpServers": {
-    "qsys-mcp-dev": {
-      "command": "go",
-      "args": ["run", "."],
-      "cwd": "C:\\path\\to\\project_directory"
+    "qsys-mcp": {
+      "command": "/path/to/qsys-mcp",
+      "args": [],
+      "cwd": "/path/to/config_directory"
     }
   }
 }
 ```
 
----
+## Available Tools
 
-## Available MCP Tools
-
-*   **Connection**: `qsys_list_cores`, `qsys_core_status`
-*   **Controls**: `qsys_get_control`, `qsys_set_control`, `qsys_get_controls`
-*   **Components**: `qsys_list_components`, `qsys_get_component_controls`, `qsys_set_component_controls`
-*   **Snapshots**: `qsys_list_snapshots`, `qsys_load_snapshot`, `qsys_save_snapshot`
-*   **Change Groups**: `qsys_create_change_group`, `qsys_poll_change_group`, `qsys_destroy_change_group`
-*   **UCI Page Control**: `qsys_set_uci_page`, `qsys_get_uci_status`
-*   **Local CSS Styling**: `qsys_write_local_css`, `qsys_read_local_css`
-*   **Developer References (New)**:
-    *   `qsys_get_css_reference`: Retrieves Q-SYS UCI CSS selectors and class naming sheets.
-    *   `qsys_get_lua_reference`: Retrieves Q-SYS Lua API specifications and GC prevention code templates.
-
----
-
-## Documentation
-Full detailed manuals are located in the `doc/` directory:
-*   [English Manual](doc/manual_en.md)
-*   [Japanese Manual](doc/manual_ja.md)
+The MCP server provides the following tools to the AI agent:
+- `qsys_list_cores`: List configured cores and states.
+- `qsys_core_status`: Get system engine status.
+- `qsys_get_control` / `qsys_set_control`: Read and write named controls.
+- `qsys_get_controls`: Batch read named controls.
+- `qsys_list_components` / `qsys_get_component_controls` / `qsys_set_component_controls`: Component-level control.
+- `qsys_list_snapshots` / `qsys_load_snapshot` / `qsys_save_snapshot`: Snapshot control.
+- `qsys_create_change_group` / `qsys_poll_change_group` / `qsys_destroy_change_group`: Monitor control changes.
+- `qsys_set_uci_page` / `qsys_get_uci_status`: Switch and monitor touchscreen UCI screens.
+- `qsys_write_local_css` / `qsys_read_local_css`: Read/Write style sheets.
+- `qsys_run_lua`: Run arbitrary Lua commands on the Core.

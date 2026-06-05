@@ -77,7 +77,7 @@ func RegisterComponentTools(s *mcp.Server) {
 				}
 			}
 
-			lines = append(lines, fmt.Sprintf("• %s (%s)", name, compType))
+			lines = append(lines, fmt.Sprintf("- %s (%s)", name, compType))
 		}
 
 		if len(lines) == 0 {
@@ -227,8 +227,9 @@ func RegisterComponentTools(s *mcp.Server) {
 				return "", fmt.Errorf("controls[%d]: 'name' is required", i)
 			}
 
-			if config.IsProtected(name) {
-				blocked = append(blocked, name)
+			fullName := fmt.Sprintf("%s.%s", component, name)
+			if config.IsProtected(fullName) {
+				blocked = append(blocked, fullName)
 				continue
 			}
 
