@@ -41,6 +41,16 @@ Configure the server by editing `config.json` in the same directory as the execu
 - `polling_interval`: Recommended change group polling interval in milliseconds.
 - `protected_controls`: Comma-separated regex list of controls that should block write attempts.
 
+## Download
+
+Pre-built binaries are available on the [Releases page](https://github.com/Mono-Gen/QSYS-MCP/releases).
+
+| Platform | File |
+|---|---|
+| Windows (x64) | `qsys-mcp.exe` (inside the zip) |
+| macOS (Apple Silicon) | `qsys-mcp-mac-arm64` (inside the zip) |
+| macOS (Intel) | `qsys-mcp-mac-amd64` (inside the zip) |
+
 ## Installation & Setup
 
 ### 1. Run/Compile the Server
